@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercices CCF &mdash; Suites Arithm&eacute;tiques</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent1: #4f8ef7;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --warn: #f87171;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --gold: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Sora", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem 4rem; }
+  header { text-align: center; margin-bottom: 3rem; }
+  .header-tag { display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 0.7rem; letter-spacing: 0.15em; color: var(--accent1); background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; margin-bottom: 1rem; text-transform: uppercase; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; background: linear-gradient(135deg, #e2e8f0 30%, var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; margin-bottom: 0.5rem; }
+  header p { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+  .ex-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; max-width: 960px; margin: 0 auto 3rem; }
+  .ex-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.6rem; cursor: pointer; transition: all 0.25s ease; position: relative; overflow: hidden; }
+  .ex-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; opacity: 0; transition: opacity 0.25s; }
+  .ex-card.easy::before  { background: var(--accent3); }
+  .ex-card.medium::before{ background: var(--accent1); }
+  .ex-card.hard::before  { background: var(--accent2); }
+  .ex-card:hover { border-color: var(--accent1); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(79,142,247,0.12); }
+  .ex-card:hover::before { opacity: 1; }
+  .ex-num { font-family: "JetBrains Mono", monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.8rem; }
+  .ex-card.easy   .ex-num { color: var(--accent3); }
+  .ex-card.medium .ex-num { color: var(--accent1); }
+  .ex-card.hard   .ex-num { color: var(--accent2); }
+  .ex-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.3; }
+  .ex-desc  { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem; }
+  .ex-meta  { display: flex; align-items: center; gap: 0.5rem; }
+  .badge { padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.7rem; font-weight: 600; }
+  .badge-easy   { background: rgba(52,211,153,0.15); color: var(--accent3); }
+  .badge-medium { background: rgba(79,142,247,0.15); color: var(--accent1); }
+  .badge-hard   { background: rgba(167,139,250,0.15); color: var(--accent2); }
+  .badge-q      { background: rgba(255,255,255,0.07); color: var(--muted); }
+  .btn-start { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-top: 1rem; }
+  .btn-start svg { width: 14px; height: 14px; }
+  .ex-panel { display: none; max-width: 760px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+  .ex-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .panel-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+  .back-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 0.9rem; color: var(--muted); cursor: pointer; font-family: "Sora", sans-serif; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; transition: all 0.2s; }
+  .back-btn:hover { color: var(--text); border-color: var(--accent1); }
+  .panel-title { font-size: 1.1rem; font-weight: 600; }
+  .enonce-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.8rem; margin-bottom: 1.5rem; }
+  .enonce-label { font-family: "JetBrains Mono", monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem; }
+  .enonce-text { font-size: 0.95rem; line-height: 1.7; color: var(--text); }
+  .enonce-text strong { color: var(--accent1); }
+  .enonce-highlight { display: block; background: rgba(79,142,247,0.1); border-left: 3px solid var(--accent1); border-radius: 0 8px 8px 0; padding: 0.6rem 1rem; margin: 0.8rem 0; font-size: 0.9rem; font-family: "JetBrains Mono", monospace; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; font-family: "JetBrains Mono", monospace; }
+  .progress-bar-wrap { background: var(--surface2); border-radius: 20px; height: 6px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--accent1), var(--accent2)); transition: width 0.4s ease; }
+  .question-block { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.6rem; margin-bottom: 1rem; animation: fadeIn 0.35s ease; }
+  .q-label { font-family: "JetBrains Mono", monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.8rem; }
+  .q-text { font-size: 0.98rem; line-height: 1.6; font-weight: 500; margin-bottom: 1.2rem; color: var(--text); }
+  .choices { display: grid; gap: 0.6rem; }
+  .choice-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; color: var(--text); cursor: pointer; font-family: "Sora", sans-serif; font-size: 0.88rem; text-align: left; transition: all 0.2s; display: flex; align-items: center; gap: 0.7rem; }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent1); background: rgba(79,142,247,0.08); }
+  .choice-btn.correct { border-color: var(--accent3); background: rgba(52,211,153,0.1); color: var(--accent3); }
+  .choice-btn.wrong   { border-color: var(--warn);    background: rgba(248,113,113,0.1); color: var(--warn); }
+  .choice-key { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; background: rgba(255,255,255,0.06); font-family: "JetBrains Mono", monospace; font-size: 0.7rem; font-weight: 600; flex-shrink: 0; }
+  .free-input-wrap { display: flex; gap: 0.7rem; flex-wrap: wrap; align-items: flex-start; }
+  .free-input { flex: 1; min-width: 160px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; color: var(--text); font-family: "JetBrains Mono", monospace; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+  .free-input:focus   { border-color: var(--accent1); }
+  .free-input.correct { border-color: var(--accent3); background: rgba(52,211,153,0.08); }
+  .free-input.wrong   { border-color: var(--warn);    background: rgba(248,113,113,0.08); }
+  .submit-btn { background: var(--accent1); border: none; border-radius: 10px; padding: 0.75rem 1.4rem; color: #fff; font-family: "Sora", sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .submit-btn:hover    { background: #6ba3ff; transform: translateY(-1px); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .feedback { margin-top: 1rem; padding: 0.8rem 1.1rem; border-radius: 10px; font-size: 0.88rem; line-height: 1.6; display: none; }
+  .feedback.correct-fb { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: var(--accent3); display: block; }
+  .feedback.wrong-fb   { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: var(--warn); display: block; }
+  .feedback strong { display: block; margin-bottom: 0.3rem; }
+  .next-btn { width: 100%; margin-top: 1rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem; color: var(--text); font-family: "Sora", sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: none; align-items: center; justify-content: center; gap: 0.5rem; }
+  .next-btn.visible { display: flex; animation: fadeIn 0.3s ease; }
+  .next-btn:hover { border-color: var(--accent1); color: var(--accent1); }
+  .result-block { display: none; text-align: center; padding: 2.5rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; animation: fadeIn 0.4s ease; }
+  .result-block.show { display: block; }
+  .result-score { font-size: 3rem; font-weight: 700; background: linear-gradient(135deg, var(--accent3), var(--accent1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+  .result-msg { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+  .restart-btn { background: linear-gradient(135deg, var(--accent1), var(--accent2)); border: none; border-radius: 12px; padding: 0.85rem 2rem; color: #fff; font-family: "Sora", sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .restart-btn:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">&#10022; Pr&eacute;paration CCF &middot; Math&eacute;matiques</div>
+  <h1>Suites Arithm&eacute;tiques<br>Exercices d&apos;application</h1>
+  <p>1&egrave;re &amp; Terminale Bac Pro &mdash; 3 exercices, du plus simple au plus difficile</p>
+</header>
+
+<div class="ex-selector" id="selector">
+  <div class="ex-card easy" onclick="openExercise(1)">
+    <div class="ex-num">&#9650; Exercice 01</div>
+    <div class="ex-title">L&apos;abonnement de sport &#x1F3CB;&#xFE0F;</div>
+    <div class="ex-desc">Reconna&icirc;tre une suite arithm&eacute;tique, identifier la raison et calculer un terme avec la formule g&eacute;n&eacute;rale.</div>
+    <div class="ex-meta">
+      <span class="badge badge-easy">Facile</span>
+      <span class="badge badge-q">4 questions</span>
+    </div>
+    <div class="btn-start">Commencer <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+  </div>
+  <div class="ex-card medium" onclick="openExercise(2)">
+    <div class="ex-num">&#9650;&#9650; Exercice 02</div>
+    <div class="ex-title">La production d&apos;atelier &#x1FAB5;</div>
+    <div class="ex-desc">Mod&eacute;liser une situation de production, calculer un terme lointain et utiliser la somme des termes.</div>
+    <div class="ex-meta">
+      <span class="badge badge-medium">Interm&eacute;diaire</span>
+      <span class="badge badge-q">5 questions</span>
+    </div>
+    <div class="btn-start">Commencer <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+  </div>
+  <div class="ex-card hard" onclick="openExercise(3)">
+    <div class="ex-num">&#9650;&#9650;&#9650; Exercice 03</div>
+    <div class="ex-title">L&apos;investissement progressif &#x1F4B0;</div>
+    <div class="ex-desc">Construire un mod&egrave;le complet, interpr&eacute;ter et r&eacute;soudre un probl&egrave;me de seuil.</div>
+    <div class="ex-meta">
+      <span class="badge badge-hard">Difficile</span>
+      <span class="badge badge-q">6 questions</span>
+    </div>
+    <div class="btn-start">Commencer <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+  </div>
+</div>
+
+<!-- PANEL 1 -->
+<div class="ex-panel" id="panel-1">
+  <div class="panel-header">
+    <button class="back-btn" onclick="backToMenu()">&#8592; Retour</button>
+    <div class="panel-title">&#x1F3CB;&#xFE0F; Exercice 1 &mdash; L&apos;abonnement de sport</div>
+  </div>
+  <div class="enonce-box">
+    <div class="enonce-label">&#128203; &Eacute;nonc&eacute;</div>
+    <div class="enonce-text">
+      Un club de sport propose une offre sp&eacute;ciale. Le <strong>1er mois</strong>, vous payez <strong>30 &euro;</strong>. Chaque mois suivant, le tarif augmente de <strong>5 &euro;</strong> par rapport au mois pr&eacute;c&eacute;dent.<br><br>
+      On note <em>u<sub>n</sub></em> le montant pay&eacute; le mois n (avec n&nbsp;=&nbsp;1 pour le premier mois).
+      <span class="enonce-highlight">u&#8321; = 30 &euro; &nbsp;&nbsp;|&nbsp;&nbsp; raison r = +5 &euro;/mois</span>
+    </div>
+  </div>
+  <div class="progress-label"><span id="p1-qlabel">Question 1 / 4</span><span id="p1-score">0 bonne(s) r&eacute;ponse(s)</span></div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="p1-bar" style="width:0%"></div></div>
+  <div id="p1-questions"></div>
+  <div class="result-block" id="p1-result">
+    <div class="result-score" id="p1-result-score"></div>
+    <div class="result-msg" id="p1-result-msg"></div>
+    <button class="restart-btn" onclick="restartExercise(1)">&#x1F504; Recommencer</button>
+  </div>
+</div>
+
+<!-- PANEL 2 -->
+<div class="ex-panel" id="panel-2">
+  <div class="panel-header">
+    <button class="back-btn" onclick="backToMenu()">&#8592; Retour</button>
+    <div class="panel-title">&#x1FAB5; Exercice 2 &mdash; La production d&apos;atelier</div>
+  </div>
+  <div class="enonce-box">
+    <div class="enonce-label">&#128203; &Eacute;nonc&eacute;</div>
+    <div class="enonce-text">
+      Un &eacute;l&egrave;ve en formation agencement r&eacute;alise des panneaux de bois. <strong>La 1&egrave;re semaine</strong>, il produit <strong>8 panneaux</strong>. Gr&acirc;ce &agrave; sa progression, il produit <strong>3 panneaux de plus chaque semaine</strong>.<br><br>
+      On note <em>u<sub>n</sub></em> le nombre de panneaux produits la semaine n (n commence &agrave; 1).
+      <span class="enonce-highlight">u&#8321; = 8 panneaux &nbsp;&nbsp;|&nbsp;&nbsp; raison r = +3 panneaux/semaine</span>
+    </div>
+  </div>
+  <div class="progress-label"><span id="p2-qlabel">Question 1 / 5</span><span id="p2-score">0 bonne(s) r&eacute;ponse(s)</span></div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="p2-bar" style="width:0%"></div></div>
+  <div id="p2-questions"></div>
+  <div class="result-block" id="p2-result">
+    <div class="result-score" id="p2-result-score"></div>
+    <div class="result-msg" id="p2-result-msg"></div>
+    <button class="restart-btn" onclick="restartExercise(2)">&#x1F504; Recommencer</button>
+  </div>
+</div>
+
+<!-- PANEL 3 -->
+<div class="ex-panel" id="panel-3">
+  <div class="panel-header">
+    <button class="back-btn" onclick="backToMenu()">&#8592; Retour</button>
+    <div class="panel-title">&#x1F4B0; Exercice 3 &mdash; L&apos;investissement progressif</div>
+  </div>
+  <div class="enonce-box">
+    <div class="enonce-label">&#128203; &Eacute;nonc&eacute;</div>
+    <div class="enonce-text">
+      Lucas d&eacute;marre un plan d&apos;&eacute;pargne. Il verse <strong>50 &euro; le 1er mois</strong> (n&nbsp;=&nbsp;1), puis augmente son versement de <strong>15 &euro; chaque mois</strong>.<br><br>
+      On note <em>u<sub>n</sub></em> le montant vers&eacute; le mois n. Son objectif est d&apos;atteindre un versement mensuel d&apos;<strong>au moins 200 &euro;</strong>.
+      <span class="enonce-highlight">u&#8321; = 50 &euro; &nbsp;&nbsp;|&nbsp;&nbsp; raison r = +15 &euro;/mois</span>
+    </div>
+  </div>
+  <div class="progress-label"><span id="p3-qlabel">Question 1 / 6</span><span id="p3-score">0 bonne(s) r&eacute;ponse(s)</span></div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="p3-bar" style="width:0%"></div></div>
+  <div id="p3-questions"></div>
+  <div class="result-block" id="p3-result">
+    <div class="result-score" id="p3-result-score"></div>
+    <div class="result-msg" id="p3-result-msg"></div>
+    <button class="restart-btn" onclick="restartExercise(3)">&#x1F504; Recommencer</button>
+  </div>
+</div>
+
+<script>
+var Q = {
+  1: [
+    {
+      type: "choice",
+      text: "La suite (u<sub>n</sub>) repr\u00e9sentant le tarif mensuel est-elle arithm\u00e9tique\u00a0?",
+      ch: [
+        "Oui, car on ajoute toujours la m\u00eame valeur (5\u00a0\u20ac) pour passer d\u2019un terme au suivant.",
+        "Non, car le tarif change chaque mois.",
+        "Oui, mais seulement si le tarif diminue.",
+        "On ne peut pas savoir sans calculer tous les termes."
+      ],
+      ok: 0,
+      fb: "Exact\u00a0! Une suite est arithm\u00e9tique quand la diff\u00e9rence entre deux termes cons\u00e9cutifs est constante. Ici u\u2082 \u2212 u\u2081 = 35 \u2212 30 = 5\u00a0\u20ac. La raison est r\u00a0=\u00a05."
+    },
+    {
+      type: "choice",
+      text: "Quelle est la raison r de cette suite\u00a0?",
+      ch: ["r = 30", "r = 5", "r = \u221215", "r = 1"],
+      ok: 1,
+      fb: "Parfait\u00a0! r = 5, car chaque mois on ajoute 5\u00a0\u20ac au tarif pr\u00e9c\u00e9dent. La suite est croissante (r > 0)."
+    },
+    {
+      type: "free",
+      text: "Calculez u\u2084, le tarif du 4\u00e8me mois. Formule\u00a0: u<sub>n</sub> = u\u2081 + (n \u2212 1) \u00d7 r",
+      ans: 45,
+      unit: "\u20ac",
+      fb: "u\u2084 = 30 + (4 \u2212 1) \u00d7 5 = 30 + 15 = 45\u00a0\u20ac."
+    },
+    {
+      type: "choice",
+      text: "Quel serait le tarif du 10\u00e8me mois\u00a0?",
+      ch: ["75\u00a0\u20ac", "80\u00a0\u20ac", "70\u00a0\u20ac", "85\u00a0\u20ac"],
+      ok: 0,
+      fb: "u\u2081\u2080 = 30 + (10 \u2212 1) \u00d7 5 = 30 + 45 = 75\u00a0\u20ac. La formule g\u00e9n\u00e9rale \u00e9vite de calculer terme par terme."
+    }
+  ],
+  2: [
+    {
+      type: "choice",
+      text: "Quelle formule utilise-t-on pour calculer u\u2082 \u00e0 partir de u\u2081\u00a0?",
+      ch: ["u\u2082 = u\u2081 \u00d7 r", "u\u2082 = u\u2081 + r", "u\u2082 = u\u2081 \u2212 r", "u\u2082 = u\u2081 \u00f7 r"],
+      ok: 1,
+      fb: "Exact\u00a0! La formule de r\u00e9currence est u\u2099\u208a\u2081 = u\u2099 + r. Ici u\u2082 = 8 + 3 = 11 panneaux."
+    },
+    {
+      type: "free",
+      text: "Calculez u\u2086, le nombre de panneaux produits la 6\u00e8me semaine.",
+      ans: 23,
+      unit: "panneaux",
+      fb: "u\u2086 = 8 + (6 \u2212 1) \u00d7 3 = 8 + 15 = 23 panneaux."
+    },
+    {
+      type: "choice",
+      text: "Au bout de combien de semaines l\u2019\u00e9l\u00e8ve produit-il exactement 35 panneaux dans la semaine\u00a0?",
+      ch: ["Semaine 8", "Semaine 9", "Semaine 10", "Semaine 7"],
+      ok: 2,
+      fb: "On r\u00e9sout u\u2099 = 35 : 8 + (n\u22121)\u00d73 = 35 \u2192 (n\u22121) = 9 \u2192 n = 10. C\u2019est la semaine 10\u00a0!"
+    },
+    {
+      type: "free",
+      text: "Calculez S\u2086, la production totale sur les 6 premi\u00e8res semaines. Rappel\u00a0: S\u2099 = n \u00d7 (u\u2081 + u\u2099) \u00f7 2",
+      ans: 93,
+      unit: "panneaux",
+      fb: "S\u2086 = 6 \u00d7 (8 + 23) \u00f7 2 = 6 \u00d7 15,5 = 93 panneaux au total."
+    },
+    {
+      type: "choice",
+      text: "Que repr\u00e9sente S\u2086 = 93 dans ce contexte\u00a0?",
+      ch: [
+        "Le nombre de panneaux produits uniquement la 6\u00e8me semaine.",
+        "La somme de tous les panneaux produits de la semaine 1 \u00e0 la semaine 6.",
+        "La moyenne hebdomadaire de production.",
+        "Le nombre de semaines n\u00e9cessaires pour produire 93 panneaux."
+      ],
+      ok: 1,
+      fb: "Parfait\u00a0! S\u2086 = 93 est le total cumul\u00e9 : 8 + 11 + 14 + 17 + 20 + 23 = 93 panneaux produits sur les 6 semaines."
+    }
+  ],
+  3: [
+    {
+      type: "choice",
+      text: "Quel est le type de cette suite et sa raison\u00a0?",
+      ch: [
+        "Suite arithm\u00e9tique de raison r = 50",
+        "Suite arithm\u00e9tique de raison r = 15",
+        "Suite g\u00e9om\u00e9trique de raison r = 15",
+        "Suite arithm\u00e9tique de raison r = \u221215"
+      ],
+      ok: 1,
+      fb: "Suite arithm\u00e9tique, r = 15. Croissante car r > 0 : Lucas verse de plus en plus chaque mois."
+    },
+    {
+      type: "free",
+      text: "Calculez u\u2083, le versement du 3\u00e8me mois.",
+      ans: 80,
+      unit: "\u20ac",
+      fb: "u\u2083 = 50 + (3\u22121) \u00d7 15 = 50 + 30 = 80\u00a0\u20ac. V\u00e9rif : u\u2081=50, u\u2082=65, u\u2083=80. \u2713"
+    },
+    {
+      type: "free",
+      text: "Calculez u\u2081\u2080, le versement du 10\u00e8me mois.",
+      ans: 185,
+      unit: "\u20ac",
+      fb: "u\u2081\u2080 = 50 + (10\u22121) \u00d7 15 = 50 + 135 = 185\u00a0\u20ac."
+    },
+    {
+      type: "choice",
+      text: "Lucas veut savoir \u00e0 partir de quel mois son versement atteindra au moins 200\u00a0\u20ac. Quelle in\u00e9quation doit-il r\u00e9soudre\u00a0?",
+      ch: [
+        "50 + (n \u2212 1) \u00d7 15 \u2265 200",
+        "50 \u00d7 n \u00d7 15 \u2265 200",
+        "50 + n \u00d7 15 \u2265 200",
+        "(n \u2212 1) \u00d7 15 \u2265 200"
+      ],
+      ok: 0,
+      fb: "On cherche quand u\u2099 \u2265 200, soit 50 + (n\u22121) \u00d7 15 \u2265 200."
+    },
+    {
+      type: "free",
+      text: "En r\u00e9solvant 50 + (n\u22121) \u00d7 15 \u2265 200, quel est le premier mois n o\u00f9 Lucas verse au moins 200\u00a0\u20ac\u00a0?",
+      ans: 11,
+      unit: "e mois",
+      fb: "(n\u22121)\u00d715 \u2265 150 \u2192 n\u22121 \u2265 10 \u2192 n \u2265 11. Premier mois : n=11. V\u00e9rif : u\u2081\u2081 = 50 + 10\u00d715 = 200\u00a0\u20ac. \u2713"
+    },
+    {
+      type: "free",
+      text: "Calculez S\u2081\u2081, le total \u00e9pargn\u00e9 sur les 11 premiers mois. Rappel\u00a0: S\u2099 = n \u00d7 (u\u2081 + u\u2099) \u00f7 2",
+      ans: 1375,
+      unit: "\u20ac",
+      fb: "u\u2081\u2081 = 200\u00a0\u20ac. S\u2081\u2081 = 11 \u00d7 (50 + 200) \u00f7 2 = 11 \u00d7 125 = 1\u00a0375\u00a0\u20ac \u00e9pargn\u00e9s en 11 mois\u00a0!"
+    }
+  ]
+};
+
+var S = { n: null, qi: 0, score: 0, done: false };
+
+function openExercise(n) {
+  document.getElementById("selector").style.display = "none";
+  S.n = n; S.qi = 0; S.score = 0; S.done = false;
+  document.getElementById("panel-" + n).classList.add("active");
+  render(n);
+}
+function backToMenu() {
+  document.querySelectorAll(".ex-panel").forEach(function(p) { p.classList.remove("active"); });
+  document.getElementById("selector").style.display = "grid";
+}
+function restartExercise(n) {
+  document.getElementById("p" + n + "-result").classList.remove("show");
+  S.qi = 0; S.score = 0; S.done = false;
+  render(n);
+}
+
+function render(n) {
+  var qs = Q[n];
+  var c = document.getElementById("p" + n + "-questions");
+  c.innerHTML = "";
+  document.getElementById("p" + n + "-result").classList.remove("show");
+  if (S.qi >= qs.length) { showResult(n); return; }
+  S.done = false;
+  updateBar(n);
+  var q = qs[S.qi];
+  var block = document.createElement("div");
+  block.className = "question-block";
+
+  var lbl = document.createElement("div");
+  lbl.className = "q-label";
+  lbl.textContent = "Question " + (S.qi + 1) + " sur " + qs.length;
+  block.appendChild(lbl);
+
+  var qtxt = document.createElement("div");
+  qtxt.className = "q-text";
+  qtxt.innerHTML = q.text;
+  block.appendChild(qtxt);
+
+  if (q.type === "choice") {
+    var cd = document.createElement("div");
+    cd.className = "choices";
+    var keys = ["A","B","C","D"];
+    q.ch.forEach(function(txt, i) {
+      var b = document.createElement("button");
+      b.className = "choice-btn";
+      var ks = document.createElement("span");
+      ks.className = "choice-key";
+      ks.textContent = keys[i];
+      b.appendChild(ks);
+      b.appendChild(document.createTextNode(txt));
+      b.onclick = (function(idx, btn) { return function() { doChoice(n, idx, btn, cd, q); }; })(i, b);
+      cd.appendChild(b);
+    });
+    block.appendChild(cd);
+  } else {
+    var wr = document.createElement("div");
+    wr.className = "free-input-wrap";
+    var inp = document.createElement("input");
+    inp.className = "free-input";
+    inp.type = "number";
+    inp.placeholder = "Votre r\u00e9ponse\u2026";
+    inp.id = "fi-" + n;
+    var sb = document.createElement("button");
+    sb.className = "submit-btn";
+    sb.textContent = "Valider";
+    sb.onclick = (function(i2, s2) { return function() { doFree(n, i2, s2, q); }; })(inp, sb);
+    inp.addEventListener("keydown", function(e) { if (e.key === "Enter") sb.click(); });
+    wr.appendChild(inp);
+    wr.appendChild(sb);
+    block.appendChild(wr);
+  }
+
+  var fb = document.createElement("div");
+  fb.className = "feedback";
+  fb.id = "fb-" + n;
+  block.appendChild(fb);
+
+  var nb = document.createElement("button");
+  nb.className = "next-btn";
+  nb.id = "nb-" + n;
+  nb.textContent = (S.qi < qs.length - 1) ? "Question suivante \u2192" : "Voir les r\u00e9sultats \u2192";
+  nb.onclick = function() { S.qi++; render(n); };
+  block.appendChild(nb);
+  c.appendChild(block);
+
+  if (q.type === "free") {
+    setTimeout(function() { var el = document.getElementById("fi-" + n); if (el) el.focus(); }, 80);
+  }
+}
+
+function doChoice(n, idx, btn, cd, q) {
+  if (S.done) return;
+  S.done = true;
+  cd.querySelectorAll(".choice-btn").forEach(function(b) { b.disabled = true; });
+  if (idx === q.ok) { btn.classList.add("correct"); S.score++; showFb(n, true, q.fb); }
+  else { btn.classList.add("wrong"); cd.querySelectorAll(".choice-btn")[q.ok].classList.add("correct"); showFb(n, false, q.fb); }
+  document.getElementById("nb-" + n).classList.add("visible");
+  updateBar(n);
+}
+
+function doFree(n, inp, sb, q) {
+  if (S.done) return;
+  var v = parseFloat(String(inp.value).replace(",", "."));
+  if (isNaN(v)) { inp.focus(); return; }
+  S.done = true;
+  inp.disabled = true; sb.disabled = true;
+  if (v === q.ans) {
+    inp.classList.add("correct"); S.score++;
+    showFb(n, true, q.fb);
+  } else {
+    inp.classList.add("wrong");
+    showFb(n, false, "La bonne r\u00e9ponse \u00e9tait " + q.ans + (q.unit ? "\u00a0" + q.unit : "") + ". " + q.fb);
+  }
+  document.getElementById("nb-" + n).classList.add("visible");
+  updateBar(n);
+}
+
+function showFb(n, ok, txt) {
+  var el = document.getElementById("fb-" + n);
+  el.className = "feedback " + (ok ? "correct-fb" : "wrong-fb");
+  var s = document.createElement("strong");
+  s.textContent = ok ? "\u2713 Bravo\u00a0!" : "\u2717 Pas tout \u00e0 fait\u2026";
+  el.innerHTML = "";
+  el.appendChild(s);
+  el.appendChild(document.createTextNode(txt));
+}
+
+function updateBar(n) {
+  var total = Q[n].length;
+  var pct = (S.qi / total) * 100;
+  document.getElementById("p" + n + "-bar").style.width = pct + "%";
+  document.getElementById("p" + n + "-qlabel").textContent = "Question " + (Math.min(S.qi + 1, total)) + " / " + total;
+  document.getElementById("p" + n + "-score").textContent = S.score + " bonne(s) r\u00e9ponse(s)";
+}
+
+function showResult(n) {
+  document.getElementById("p" + n + "-questions").innerHTML = "";
+  document.getElementById("p" + n + "-bar").style.width = "100%";
+  var total = Q[n].length;
+  document.getElementById("p" + n + "-result").classList.add("show");
+  document.getElementById("p" + n + "-result-score").textContent = S.score + " / " + total;
+  var msgs = [
+    "Continue tes efforts, relis le cours\u00a0! \uD83D\uDCAA",
+    "C\u2019est un bon d\u00e9but, continue\u00a0! \uD83D\uDCDA",
+    "Bien jou\u00e9, tu ma\u00eetrises l\u2019essentiel\u00a0! \uD83D\uDC4D",
+    "Excellent\u00a0! Tu es pr\u00eat(e) pour le CCF\u00a0! \uD83C\uDF89"
+  ];
+  var idx = S.score <= 1 ? 0 : S.score <= 2 ? 1 : S.score < total ? 2 : 3;
+  document.getElementById("p" + n + "-result-msg").textContent = msgs[idx];
+}
+</script>
+</body>
+</html>
